@@ -98,22 +98,30 @@ function App() {
     
     const plan = generateStudyPlan(formData);
 
-const { error } = await supabase
-  .from('study_plans')
-  .insert([
-    {
+try {
+  const response = await fetch('http://127.0.0.1:5000/save-plan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
       subject_name: formData.subjectName,
       deadline: formData.deadline,
       difficulty: formData.difficulty,
       confidence: formData.confidence,
       study_hours: Number(formData.studyHours)
-    }
-  ]);
+    })
+  });
 
-if (error) {
-  console.error('Error saving study plan:', error.message);
-} else {
-  console.log('Study plan saved to Supabase successfully');
+  const result = await response.json();
+
+  if (!response.ok) {
+    console.error('Error saving study plan:', result);
+  } else {
+    console.log('Study plan saved through Python backend:', result);
+  }
+} catch (error) {
+  console.error('Backend connection error:', error);
 }
 
 setStudyPlan(plan);

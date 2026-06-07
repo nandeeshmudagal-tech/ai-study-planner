@@ -16,7 +16,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"message": "AI Study Planner Python backend is running"})
+    return jsonify({"message": "AI Study Planner backend is running"})
 
 @app.route("/save-plan", methods=["POST"])
 def save_plan():
