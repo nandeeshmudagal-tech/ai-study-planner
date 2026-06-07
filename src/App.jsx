@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { generateStudyPlan, formatDate } from './utils/planGenerator';
+import { supabase } from './lib/supabase';
 
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -97,30 +98,22 @@ function App() {
     
     const plan = generateStudyPlan(formData);
 
-try {
-  const response = await fetch('http://127.0.0.1:5000/save-plan', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
+const { error } = await supabase
+  .from('study_plans')
+  .insert([
+    {
       subject_name: formData.subjectName,
       deadline: formData.deadline,
       difficulty: formData.difficulty,
       confidence: formData.confidence,
       study_hours: Number(formData.studyHours)
-    })
-  });
+    }
+  ]);
 
-  const result = await response.json();
-
-  if (!response.ok) {
-    console.error('Error saving study plan:', result);
-  } else {
-    console.log('Study plan saved through Python backend:', result);
-  }
-} catch (error) {
-  console.error('Backend connection error:', error);
+if (error) {
+  console.error('Error saving study plan:', error.message);
+} else {
+  console.log('Study plan saved to Supabase successfully');
 }
 
 setStudyPlan(plan);
